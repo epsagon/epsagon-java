@@ -24,7 +24,7 @@ public class BaseLambdaRunner {
                 .putMetadata("log_group_name", context.getLogGroupName())
                 .putMetadata("function_version", context.getFunctionVersion())
                 .putMetadata("memory", String.valueOf(context.getMemoryLimitInMB()))
-                .putMetadata("cold_start", String.valueOf(ColdStart.readAndSwitch()))
+                .putMetadata("cold_start", String.valueOf(ColdStart.getInstance().readAndSwitch()))
                 .putMetadata("region", Region.getRegion())
                 .putMetadata("aws_account", context.getInvokedFunctionArn().split(":")[4]);
         return builder;
