@@ -42,8 +42,8 @@ public abstract class BasePOJOExecutor extends Executor {
         EventOuterClass.Event.Builder runnerBuilder = LambdaRunner.newBuilder(context);
         runnerBuilder.setStartTime(TimeHelper.getCurrentTime());
         Type inputType = _userHandlerMethod.getParameterTypes()[0];
+
         // Not trying and catching here. If malformed input was given we should explode.
-        // Should work on anything BUT S3Event, they have a bug (no empty constructor)
         Object realInput = _objectMapper.readValue(input, (Class<?>) inputType);
 
         try {
@@ -58,8 +58,13 @@ public abstract class BasePOJOExecutor extends Executor {
             Object result = _userHandlerMethod.invoke(_userHandlerObj, realInput, context);
             Type outputType = _userHandlerMethod.getReturnType();
             _objectMapper.writeValue(output, ((Class) outputType).cast(result));
+            runnerBuilder.getResourceBuilder().putMetadata(
+                    "return_value",
+                    _objectMapper.writeValueAsString(output)
+            );
         } catch (IllegalAccessException | InvocationTargetException e) {
             trace.addException(e); // we could not invoke the function
+            throw e;
         } catch (Throwable e) {
             EventBuildHelper.setException(runnerBuilder, e);
             throw e;
