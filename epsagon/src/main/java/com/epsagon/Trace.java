@@ -39,7 +39,7 @@ public class Trace {
      */
     public synchronized void reset() {
         _core = TraceOuterClass.Trace.newBuilder()
-                .setPlatform("Java " + System.getProperty("java.version"))
+                .setPlatform("java " + System.getProperty("java.version"))
                 .setVersion("1.0.0");
     }
 
