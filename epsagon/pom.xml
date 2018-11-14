@@ -53,7 +53,7 @@
     </repositories>
     <groupId>com.epsagon</groupId>
     <artifactId>epsagon</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.1.0</version>
     <dependencies>
         <dependency>
             <groupId>com.amazonaws</groupId>
