@@ -35,7 +35,7 @@ jobs:
     before_script:
       - yarn global add @conveyal/maven-semantic-release semantic-release
     script:
-      - ./build.sh
+      - ./build.sh --sign
     after_success:
       - cd epsagon
       - semantic-release --prepare @conveyal/maven-semantic-release --publish @semantic-release/github,@conveyal/maven-semantic-release --verify-conditions @semantic-release/github --verify-release @conveyal/maven-semantic-release
