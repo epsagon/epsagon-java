@@ -7,6 +7,7 @@ import com.epsagon.events.EventBuildHelper;
 import com.epsagon.events.runners.LambdaRunner;
 import com.epsagon.events.triggers.TriggerFactory;
 import com.epsagon.protocol.EventOuterClass;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
@@ -23,6 +24,8 @@ import java.lang.reflect.Type;
 public abstract class BasePOJOExecutor extends Executor {
     private static final ObjectMapper _objectMapper = new ObjectMapper()
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .enable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS)
             .registerModule(new JodaModule());
 
     /**
