@@ -1,6 +1,6 @@
 should_sign=$1
 
-if [ $should_sign = "--sign" ]; then
+if [ "$should_sign" = "--sign" ]; then
     cd instrumentation/ &&
         mvn clean package &&
         cd .. &&
