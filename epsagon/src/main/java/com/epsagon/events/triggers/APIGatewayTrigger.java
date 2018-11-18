@@ -6,7 +6,7 @@ import com.epsagon.protocol.EventOuterClass;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * A builder factory for a APIGateway rigger.
+ * A builder factory for a APIGateway trigger.
  */
 public class APIGatewayTrigger {
 
