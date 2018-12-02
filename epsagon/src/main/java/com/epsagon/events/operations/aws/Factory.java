@@ -56,7 +56,7 @@ public class Factory {
      *
      * @param request  The AWS Request object.
      * @param response The AWS Response object, if any. (may be null)
-     * @param client The Amazon Http Client.
+     * @param client   The Amazon Http Client.
      * @param error    An exception for the request, if any. (may be null)
      * @return A builder with pre-initialized fields.
      */
@@ -66,15 +66,11 @@ public class Factory {
             AmazonHttpClient client,
             Exception error
     ) {
-        try {
-            return OPERATIONS_BY_EVENT.getOrDefault(
-                    request.getHandlerContext(HandlerContextKey.SERVICE_ID).toLowerCase(),
-                    (req, res, cli, e) -> null
-            ).newBuilder(request, response, client, error);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        return OPERATIONS_BY_EVENT.getOrDefault(
+                request.getHandlerContext(HandlerContextKey.SERVICE_ID).toLowerCase(),
+                (req, res, cli, e) -> null
+        ).newBuilder(request, response, client, error);
+
     }
 
     /**

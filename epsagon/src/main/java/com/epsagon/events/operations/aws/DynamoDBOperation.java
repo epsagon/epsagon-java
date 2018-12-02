@@ -5,6 +5,7 @@ import com.amazonaws.Request;
 import com.amazonaws.Response;
 import com.amazonaws.http.AmazonHttpClient;
 import com.amazonaws.services.dynamodbv2.model.*;
+import com.epsagon.Trace;
 import com.epsagon.events.MetadataBuilder;
 import com.epsagon.protocol.EventOuterClass;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +31,8 @@ public class DynamoDBOperation {
      * @param e        An exception for the request, if any. (may be null)
      * @return A builder with pre-initialized fields.
      */
+    private static ObjectMapper objectMapper = new ObjectMapper();
+
     public static EventOuterClass.Event.Builder newBuilder(
             Request<?> request,
             Response<?> response,
@@ -41,20 +44,17 @@ public class DynamoDBOperation {
         if (response != null) {
             MetadataBuilder metadataBuilder = new MetadataBuilder(builder.getResourceBuilder().getMetadataMap());
             AmazonWebServiceRequest awsReq = request.getOriginalRequest();
-            ObjectMapper objectMapper = new ObjectMapper();
             switch (builder.getResourceBuilder().getOperation()) {
                 case "PutItem":
                     PutItemRequest putItemdReq = (PutItemRequest) awsReq;
                     builder.getResourceBuilder()
                             .setName(putItemdReq.getTableName());
                     try {
-
                         String item = objectMapper.writeValueAsString(putItemdReq.getItem());
                         metadataBuilder.put("item_hash", getMD5Hash(item));
                         metadataBuilder.putIfAllData("Item", item);
 
                     } catch (JsonProcessingException err) {
-                        err.printStackTrace();
                     }
                     break;
                 case "UpdateItem":
@@ -68,7 +68,7 @@ public class DynamoDBOperation {
                         updateParams.put("Update Expression", updateItemReq.getUpdateExpression());
                         updateParamsString = objectMapper.writeValueAsString(updateParams);
                     } catch (JsonProcessingException err) {
-                        err.printStackTrace();
+                        Trace.getInstance().addException(err);
                     }
                     builder.getResourceBuilder().setName(updateItemReq.getTableName());
                     metadataBuilder.put("Update Parameters", updateParamsString);
@@ -82,7 +82,7 @@ public class DynamoDBOperation {
                         metadataBuilder.put("Key", objectMapper.writeValueAsString(getItemReq.getKey()))
                                 .putIfAllData("Item", objectMapper.writeValueAsString(getItemRes.getItem()));
                     } catch (JsonProcessingException err) {
-                        err.printStackTrace();
+                        Trace.getInstance().addException(err);
                     }
                     break;
                 case "DeleteItem":
@@ -92,7 +92,7 @@ public class DynamoDBOperation {
                     try {
                         metadataBuilder.put("Key", objectMapper.writeValueAsString(delItemReq.getKey()));
                     } catch (JsonProcessingException err) {
-                        err.printStackTrace();
+                        Trace.getInstance().addException(err);
                     }
                     break;
                 case "BatchWriteItem":
@@ -117,7 +117,7 @@ public class DynamoDBOperation {
                         metadataBuilder.putIfAllData("Items",
                                 objectMapper.writeValueAsString(objectMapper.writeValueAsString(items)));
                     } catch (JsonProcessingException err) {
-                        err.printStackTrace();
+                        Trace.getInstance().addException(err);
                     }
             }
             builder.getResourceBuilder().putAllMetadata(metadataBuilder.build());

@@ -5,6 +5,7 @@ import com.amazonaws.Request;
 import com.amazonaws.Response;
 import com.amazonaws.http.AmazonHttpClient;
 import com.amazonaws.services.s3.model.*;
+import com.epsagon.Trace;
 import com.epsagon.events.MetadataBuilder;
 import com.epsagon.protocol.EventOuterClass;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
 import java.util.List;
 
-abstract class MixIn {
+abstract class S3ObjectSummerySerializationMixIn {
     @JsonIgnore
     String bucketName;
     @JsonIgnore
@@ -82,7 +83,7 @@ public class S3Operation {
 
                 case "ListObjects":
                     ObjectMapper objectMapper = new ObjectMapper();
-                    objectMapper.addMixIn(S3ObjectSummary.class, MixIn.class);
+                    objectMapper.addMixIn(S3ObjectSummary.class, S3ObjectSummerySerializationMixIn.class);
                     ListObjectsRequest listObjectsReq = (ListObjectsRequest) awsReq;
                     ObjectListing listObjectsResponse = (ObjectListing) response.getAwsResponse();
                     List<S3ObjectSummary> objects = listObjectsResponse.getObjectSummaries();
@@ -94,7 +95,7 @@ public class S3Operation {
                                 .setName(listObjectsReq.getBucketName())
                                 .putAllMetadata(metadataBuilder.build());
                     } catch (JsonProcessingException err) {
-                        err.printStackTrace();
+                        Trace.getInstance().addException(err);
                     }
                     break;
             }
