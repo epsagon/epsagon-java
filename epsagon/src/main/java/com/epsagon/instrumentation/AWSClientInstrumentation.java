@@ -2,7 +2,9 @@ package com.epsagon.instrumentation;
 
 import com.amazonaws.Request;
 import com.amazonaws.Response;
+import com.amazonaws.http.AmazonHttpClient;
 import com.amazonaws.handlers.RequestHandler2;
+
 import com.epsagon.Trace;
 import com.epsagon.events.operations.aws.Factory;
 import net.bytebuddy.asm.Advice;
@@ -51,7 +53,8 @@ public class AWSClientInstrumentation extends EpsagonInstrumentation {
          */
         @Advice.OnMethodExit(suppress = Throwable.class)
         public static void addEpsagonHandler(
-            @Advice.FieldValue("requestHandler2s") final List<RequestHandler2> handlers
+            @Advice.FieldValue("requestHandler2s") final List<RequestHandler2> handlers,
+            @Advice.FieldValue("client") final AmazonHttpClient client
         ) {
             for (final RequestHandler2 handler : handlers) {
                 if (handler instanceof EpsagonAWSRequestHandler) {
@@ -59,7 +62,7 @@ public class AWSClientInstrumentation extends EpsagonInstrumentation {
                 }
             }
             try {
-                handlers.add(new AWSClientInstrumentation.EpsagonAWSRequestHandler());
+                handlers.add(new AWSClientInstrumentation.EpsagonAWSRequestHandler(client));
             } catch (Throwable e) {
                 Trace.getInstance().addException(e);
             }
@@ -70,8 +73,13 @@ public class AWSClientInstrumentation extends EpsagonInstrumentation {
      * A RequestHandler that adds the event to Epsagon's Trace.
      */
     public static class EpsagonAWSRequestHandler extends RequestHandler2 {
-        private Trace _trace = Trace.getInstance();
 
+        private Trace _trace = Trace.getInstance();
+        private AmazonHttpClient _client;
+
+        public EpsagonAWSRequestHandler(AmazonHttpClient client) {
+            _client = client;
+        }
         /**
         * {@inheritDoc}
         */
@@ -90,7 +98,8 @@ public class AWSClientInstrumentation extends EpsagonInstrumentation {
                 _trace.addEvent(
                         Factory.newBuilder(
                                 request,
-                                response
+                                response,
+                                _client
                         )
                 );
             } catch (Exception error) {
@@ -108,6 +117,7 @@ public class AWSClientInstrumentation extends EpsagonInstrumentation {
                         Factory.newBuilder(
                                 request,
                                 response,
+                                _client,
                                 e
                         )
                 );

@@ -1,10 +1,10 @@
 package com.epsagon.events.operations.aws;
 
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.AmazonWebServiceResponse;
 import com.amazonaws.Request;
 import com.amazonaws.Response;
 import com.amazonaws.handlers.HandlerContextKey;
+import com.amazonaws.http.AmazonHttpClient;
 import com.epsagon.TimeHelper;
 import com.epsagon.events.EventBuildHelper;
 import com.epsagon.protocol.EventOuterClass;
@@ -19,12 +19,14 @@ public class AWSSDKOperation {
      * Creates a new Builder, with some fields pre-initialized.
      * @param request The AWS Request object.
      * @param response The AWS Response object, if any. (may be null)
+     * @param client The Amazon Http Client.
      * @param e An exception for the request, if any. (may be null)
      * @return A builder with pre-initialized fields.
      */
     public static EventOuterClass.Event.Builder newBuilder(
             Request<?> request,
             Response<?> response,
+            AmazonHttpClient client,
             Exception e
     ) {
         EventOuterClass.Event.Builder builder = EventOuterClass.Event.newBuilder()
@@ -46,8 +48,7 @@ public class AWSSDKOperation {
                 .putMetadata("Region", request.getHandlerContext(HandlerContextKey.SIGNING_REGION));
 
         if (response != null) {
-            AmazonWebServiceResponse awsResp = (AmazonWebServiceResponse) response.getAwsResponse();
-            builder.setId(awsResp.getRequestId())
+            builder.setId(client.getResponseMetadataForRequest(request.getOriginalRequest()).getRequestId())
                     .getResourceBuilder()
                     .putMetadata("Status Code", String.valueOf(response.getHttpResponse().getStatusCode()));
                     // TODO Add retry attempts
