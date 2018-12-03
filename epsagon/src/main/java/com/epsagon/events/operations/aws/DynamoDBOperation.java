@@ -53,8 +53,8 @@ public class DynamoDBOperation {
                         String item = objectMapper.writeValueAsString(putItemdReq.getItem());
                         metadataBuilder.put("item_hash", getMD5Hash(item));
                         metadataBuilder.putIfAllData("Item", item);
-
                     } catch (JsonProcessingException err) {
+                        Trace.getInstance().addException(err);
                     }
                     break;
                 case "UpdateItem":
