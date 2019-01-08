@@ -22,7 +22,7 @@ public class Trace {
     private static final int SEND_TIMEOUT_MILLISECONDS = 5000;
     private static final Logger _LOG = LogManager.getLogger(EpsagonRequestHandler.class);
     private static Trace _instance = new Trace();
-    private TraceOuterClass.Trace.Builder _core = null;
+    private TraceOuterClass.Trace.Builder _core = TraceOuterClass.Trace.newBuilder();
 
     // _config is ALIASED, so it is READ ONLY for this class
     private EpsagonConfig _config = EpsagonConfig.getInstance();

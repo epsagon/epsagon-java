@@ -26,15 +26,23 @@ public class RequestHandlerExecutor extends BasePOJOExecutor {
                 break;
             }
         }
-        if (inputType == null || !(inputType instanceof Class)) { // can never occur
+        if (inputType == null) {
             throw new ExecutorException("input type was null or not Class even though class implements RequestHandler");
+        }
+
+        Class<?> inputClass;
+        if (inputType instanceof Class) {
+            inputClass = (Class<?>) inputType;
+        } else {
+
+            inputClass = (Class<?>) ((ParameterizedType) inputType).getRawType();
         }
 
         try {
             _userHandlerMethod = _userHandlerClass.getMethod(
-                    "handleRequest",
-                    (Class<?>) inputType,
-                    Context.class
+                "handleRequest",
+                inputClass,
+                Context.class
             );
         } catch (NoSuchMethodException e) { // can never occur
            throw new ExecutorException("could not find handleRequest method");
