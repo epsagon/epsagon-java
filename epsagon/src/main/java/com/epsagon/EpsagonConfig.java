@@ -8,7 +8,9 @@ import java.util.Optional;
 public class EpsagonConfig {
     // Breaking the builder pattern for usability here
     private String _token = System.getenv("EPSAGON_TOKEN");
-    private String _appName = System.getenv("EPSAGON_APP_NAME");
+    private String _appName = Optional
+            .ofNullable(System.getenv("EPSAGON_APP_NAME"))
+            .orElse("Epsagon Application");
     private String _traceCollectorURL = Optional
             .ofNullable(System.getenv("EPSAGON_TRACE_COLLECTOR_URL"))
             .orElse("https://" + Region.getRegion() + ".tc.epsagon.com");
