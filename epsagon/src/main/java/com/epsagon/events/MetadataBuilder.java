@@ -32,7 +32,9 @@ public class MetadataBuilder {
      * @return a reference to the Metadata builder.
      */
     public MetadataBuilder put(String key, String value) {
-        _metadata.put(key, value);
+        if (value != null) {
+            _metadata.put(key, value);
+        }
         return this;
     }
 
