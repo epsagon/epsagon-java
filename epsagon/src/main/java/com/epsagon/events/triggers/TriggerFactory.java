@@ -51,6 +51,9 @@ public class TriggerFactory {
             Object event,
             Context context
     ) {
+        if (event == null) {
+            return JSONTrigger.newBuilder(null, context);
+        }
         return TRIGGERS_BY_EVENT.getOrDefault(
                 event.getClass(),
                 (e) -> JSONTrigger.newBuilder(e, context)

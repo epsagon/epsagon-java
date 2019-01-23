@@ -1,7 +1,14 @@
 package com.epsagon.executors;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.epsagon.TimeHelper;
+import com.epsagon.events.EventBuildHelper;
+import com.epsagon.events.runners.LambdaRunner;
+import com.epsagon.protocol.EventOuterClass;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -47,6 +54,30 @@ public class RequestHandlerExecutor extends BasePOJOExecutor {
         } catch (NoSuchMethodException e) { // can never occur
            throw new ExecutorException("could not find handleRequest method");
         }
-
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void execute(InputStream input, OutputStream output, Context context) throws Throwable {
+        EventOuterClass.Event.Builder runnerBuilder = LambdaRunner.newBuilder(context);
+        runnerBuilder.setStartTime(TimeHelper.getCurrentTime());
+
+        // Not trying and catching here. If malformed input was given we should explode.
+        Object realInput = parseInput(input, context);
+
+        try {
+            Object result = _userHandlerMethod.invoke(_userHandlerObj, realInput, context);
+            handleResult(output, runnerBuilder, result);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            _trace.addException(e); // we could not invoke the function
+            throw e;
+        } catch (Throwable e) {
+            EventBuildHelper.setException(runnerBuilder, e);
+            throw e;
+        } finally {
+            _trace.addEvent(EventBuildHelper.setDuration(runnerBuilder));
+        }
+    }
+
 }

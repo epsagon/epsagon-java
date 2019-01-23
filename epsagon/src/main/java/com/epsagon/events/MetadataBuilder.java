@@ -46,7 +46,7 @@ public class MetadataBuilder {
      */
     public MetadataBuilder putIfAllData(String key, String value) {
         if (!EpsagonConfig.getInstance().isMetadataOnly()) {
-            _metadata.put(key, value);
+            put(key, value);
         }
         return this;
     }

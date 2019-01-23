@@ -3,6 +3,7 @@ package com.epsagon.executors;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
+import com.epsagon.Trace;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,9 +14,10 @@ import java.lang.reflect.Method;
  * A class representing a client's handler executor.
  */
 public abstract class Executor {
-    protected static Class<?> _userHandlerClass;
-    protected static Object _userHandlerObj;
-    protected static Method _userHandlerMethod;
+    protected Class<?> _userHandlerClass;
+    protected Object _userHandlerObj;
+    protected Method _userHandlerMethod;
+    protected Trace _trace = Trace.getInstance();
 
     /**
      * @param userHandlerClass The class of the user handler.
