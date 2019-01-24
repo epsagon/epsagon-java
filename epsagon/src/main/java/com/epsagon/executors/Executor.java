@@ -4,16 +4,29 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.epsagon.Trace;
+import com.epsagon.events.triggers.TriggerFactory;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+import org.apache.commons.io.IOUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 /**
  * A class representing a client's handler executor.
  */
 public abstract class Executor {
+    protected static final ObjectMapper _objectMapper = new ObjectMapper()
+            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .enable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS)
+            .registerModule(new JodaModule());
     protected Class<?> _userHandlerClass;
     protected Object _userHandlerObj;
     protected Method _userHandlerMethod;
@@ -42,7 +55,41 @@ public abstract class Executor {
      * @param context The execution context for the Lambda.
      * @throws Throwable Any error raised by the client execution
      */
-    public abstract void execute(InputStream input, OutputStream output, Context context) throws Throwable;
+    public abstract void execute(
+            InputStream input,
+            OutputStream output,
+            Context context
+    ) throws Throwable;
+
+    /**
+     * Registers the user's trigger to the trace
+     * @param input The user's input object
+     * @param context The context of the lambda
+     */
+    protected void registerTrigger(Object input, Context context) {
+        try {
+            _trace.addEvent(
+                    TriggerFactory.newBuilder(input, context)
+            );
+        } catch (Exception e) {
+            _trace.addException(e);
+        }
+    }
+
+    /**
+     * Registers the user's trigger to the trace
+     * @param input The user's input as string
+     * @param context The context of the lambda
+     */
+    protected void registerTrigger(String input, Context context) {
+        try {
+            _trace.addEvent(
+                    TriggerFactory.newBuilder(input, context)
+            );
+        } catch (Exception e) {
+            _trace.addException(e);
+        }
+    }
 
     /**
      * A Factory for creating executors.
@@ -76,7 +123,7 @@ public abstract class Executor {
 
 
             if (wrappedHandlerName != null) {
-                if (wrappedHandlerName == "handleRequest") {
+                if (wrappedHandlerName.equals("handleRequest")) {
                     if (RequestStreamHandler.class.isAssignableFrom(userHandlerClass)) {
                         return new RequestStreamHandlerExecutor(userHandlerClass);
                     } else if (RequestHandler.class.isAssignableFrom(userHandlerClass)) {

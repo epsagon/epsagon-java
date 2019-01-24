@@ -7,6 +7,7 @@ import com.epsagon.protocol.EventOuterClass;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -25,28 +26,38 @@ public class JSONTrigger {
         Object event,
         Context context
     ) {
+        String eventString;
+        try {
+            eventString = objectMapper.writeValueAsString(event);
+        } catch (JsonProcessingException e) {
+            eventString = "could not parse input";
+        }
+
+        return newBuilder(eventString, context);
+    }
+
+    /**
+     * @param event The event the Lambda was triggered with, as string.
+     * @param context The context the Lambda was triggered with.
+     * @return a builder for a JSON trigger.
+     */
+    public static EventOuterClass.Event.Builder newBuilder(
+            String event,
+            Context context
+    ) {
         EventOuterClass.Event.Builder builder = BaseTrigger.newBuilder()
                 .setId("trigger-" + UUID.randomUUID().toString());
-        HashMap<String, String> metadata = null;
-
-
-        try {
-            metadata = new MetadataBuilder(
-                    builder.getResourceBuilder().getMetadataMap()
-            ).putIfAllData("data", objectMapper.writeValueAsString(event)).build();
-        } catch (JsonProcessingException e) {
-            Trace.getInstance().addException(e);
-        }
+        HashMap<String, String> metadata = new MetadataBuilder(
+                builder.getResourceBuilder().getMetadataMap()
+        ).putIfAllData("data", event).build();
 
         builder.getResourceBuilder()
                 .setName("trigger-" + context.getFunctionName())
                 .setOperation("json")
-                 .setType("json");
+                .setType("json");
         if (metadata != null) {
             builder.getResourceBuilder().putAllMetadata(metadata);
         }
         return builder;
-
-
     }
 }

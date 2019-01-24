@@ -4,8 +4,10 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.epsagon.TimeHelper;
 import com.epsagon.events.EventBuildHelper;
 import com.epsagon.events.runners.LambdaRunner;
+import com.epsagon.events.triggers.TriggerFactory;
 import com.epsagon.protocol.EventOuterClass;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -64,7 +66,7 @@ public class RequestHandlerExecutor extends BasePOJOExecutor {
         runnerBuilder.setStartTime(TimeHelper.getCurrentTime());
 
         // Not trying and catching here. If malformed input was given we should explode.
-        Object realInput = parseInput(input, context);
+        Object realInput = handleInput(input, context);
 
         try {
             Object result = _userHandlerMethod.invoke(_userHandlerObj, realInput, context);

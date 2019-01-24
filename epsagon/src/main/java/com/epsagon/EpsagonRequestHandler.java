@@ -1,5 +1,6 @@
 package com.epsagon;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -49,12 +50,19 @@ public class EpsagonRequestHandler implements RequestStreamHandler {
      * {@inheritDoc}
      */
     @Override
-    public final void handleRequest(InputStream input, OutputStream output, Context context) {
+    public final void handleRequest(
+            InputStream input,
+            OutputStream output,
+            Context context
+    ) throws IOException {
         _trace.reset();
 
         try {
             _executor.execute(input, output, context);
         } catch (Throwable e) {
+            if (e instanceof IOException) {
+                throw (IOException) e;
+            }
             throw new RuntimeException(e); // TODO: handle this better.
         } finally {
             _trace.send();

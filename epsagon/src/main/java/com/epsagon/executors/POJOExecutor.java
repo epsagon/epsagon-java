@@ -5,11 +5,14 @@ import com.epsagon.TimeHelper;
 import com.epsagon.events.EventBuildHelper;
 import com.epsagon.events.runners.LambdaRunner;
 import com.epsagon.protocol.EventOuterClass;
+import org.apache.commons.io.IOUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 /**
  * An executor for client request that don't implement an AWS interface, POJO requests.
@@ -37,7 +40,6 @@ public class POJOExecutor extends BasePOJOExecutor {
                             parameterTypes[parameterTypes.length - 1] == Context.class
                     )
                 ) {
-                    System.out.println("Switching candidate: " + candidate + " with m: " + m);
                     candidate = m;
                 }
             }
@@ -54,12 +56,15 @@ public class POJOExecutor extends BasePOJOExecutor {
         _userHandlerMethod = candidate;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void execute(InputStream input, OutputStream output, Context context) throws Throwable {
         EventOuterClass.Event.Builder runnerBuilder = LambdaRunner.newBuilder(context);
         runnerBuilder.setStartTime(TimeHelper.getCurrentTime());
 
         try {
-            Object realInput = parseInput(input, context);
+            Object realInput = handleInput(input, context);
             Object result = null;
             switch (_userHandlerMethod.getParameterCount()) {
                 case 0:
@@ -91,6 +96,32 @@ public class POJOExecutor extends BasePOJOExecutor {
         } finally {
             _trace.addEvent(EventBuildHelper.setDuration(runnerBuilder));
         }
+    }
 
+
+    /**
+     * Handles the user's input object and registers the trigger
+     * @param input The input stream
+     * @param context The lambda's context
+     * @return The user's deserialized input
+     * @throws IOException
+     */
+    protected Object handleInput(InputStream input, Context context) throws IOException {
+        // Input only exists if there are more then zero parameters, and the first
+        // parameter isn't a context object
+        Type[] parameterTypes = _userHandlerMethod.getParameterTypes();
+        if (
+            parameterTypes.length > 0 &&
+            parameterTypes[0] != Context.class &&
+            parameterTypes[0] != InputStream.class
+        ) {
+            return super.handleInput(input, context);
+        }
+
+        registerTrigger(
+            IOUtils.toString(input, "UTF-8"),
+            context
+        );
+        return null;
     }
 }
