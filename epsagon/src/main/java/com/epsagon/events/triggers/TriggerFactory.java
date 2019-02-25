@@ -148,7 +148,6 @@ public class TriggerFactory {
                     service = elements[elements.length - 1];
                 }
             }
-            //handle records
         } else if (eventRoot.hasNonNull("httpMethod")) {
             service = "api_gateway";
 

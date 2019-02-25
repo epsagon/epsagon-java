@@ -1,12 +1,15 @@
 package com.epsagon;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLClassLoader;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Epsagon's configuration object. a singleton.
  */
 public class EpsagonConfig {
-    // Breaking the builder pattern for usability here
     private String _token = System.getenv("EPSAGON_TOKEN");
     private String _appName = Optional
             .ofNullable(System.getenv("EPSAGON_APP_NAME"))
@@ -14,9 +17,32 @@ public class EpsagonConfig {
     private String _traceCollectorURL = Optional
             .ofNullable(System.getenv("EPSAGON_TRACE_COLLECTOR_URL"))
             .orElse("https://" + Region.getRegion() + ".tc.epsagon.com");
+    private String _version = readVersion();
     private boolean _metadataOnly = false;
-
     private static EpsagonConfig _instance = new EpsagonConfig();
+
+    /**
+     * reads the version from the manifest
+     * @return The version from the manifest
+     */
+    private String readVersion() {
+        URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
+        InputStream propsStream = cl.getResourceAsStream("epsagon-version.txt");
+        Properties props = new Properties();
+        try {
+            props.load(propsStream);
+            return props.getProperty("version");
+        } catch (IOException E) {
+            return "Failed reading version";
+        }
+    }
+
+    /**
+     * @return The library version
+     */
+    public String getVersion() {
+        return _version;
+    }
 
     /**
      * @return returns a reference to the singleton.

@@ -40,7 +40,7 @@ public class Trace {
     public synchronized void reset() {
         _core = TraceOuterClass.Trace.newBuilder()
                 .setPlatform("java " + System.getProperty("java.version"))
-                .setVersion("1.0.0");
+                .setVersion(_config.getVersion());
     }
 
     /**
