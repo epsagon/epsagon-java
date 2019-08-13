@@ -45,7 +45,7 @@ public class SNSOperation {
                     String[] topicArn = publishReq.getTopicArn().split(":");
                     metadataBuilder
                             .putIfAllData("Notification Message", publishReq.getMessage())
-                            .put("message_id", publishRes.getMessageId());
+                            .put("Message ID", publishRes.getMessageId());
                     builder.getResourceBuilder()
                             .setName(topicArn[topicArn.length - 1])
                             .putAllMetadata(metadataBuilder.build());

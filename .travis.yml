@@ -9,6 +9,7 @@ branches:
   - master
 
 install: true
+dist: trusty
 
 jdk:
 - oraclejdk8
