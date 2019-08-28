@@ -33,10 +33,11 @@ public class APIGatewayTrigger {
         MetadataBuilder metadataBuilder = new MetadataBuilder(builder.getResourceBuilder().getMetadataMap())
                 .put("stage", context.getStage())
                 .put("query_string_parameters", queryParams)
-                .put("path_parameters", pathParams);
+                .put("path_parameters", pathParams)
+                .put("path", event.getResource());
 
         builder.getResourceBuilder()
-                .setName(event.getResource())
+                .setName(event.getHeaders().get("Host"))
                 .setOperation(event.getHttpMethod())
                 .setType("api_gateway")
                 .putAllMetadata(metadataBuilder.build());
