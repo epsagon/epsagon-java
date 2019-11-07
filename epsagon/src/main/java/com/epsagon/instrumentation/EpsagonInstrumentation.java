@@ -28,7 +28,6 @@ public abstract class EpsagonInstrumentation {
      * @param parent The current agentBuilder.
      * @return agentBuilder with the instrumentation activated.
      */
-
     public AgentBuilder instrument(final AgentBuilder parent) {
         AgentBuilder agentBuilder = runSpecificTransformers(parent);
         return agentBuilder;
