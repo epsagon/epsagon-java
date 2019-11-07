@@ -30,6 +30,7 @@ jobs:
         gpg --import --batch maven-artifact-signing-key.asc
       fi
     before_script:
+      - nvm use node
       - yarn global add @conveyal/maven-semantic-release semantic-release
     script:
       - ./build.sh --sign
