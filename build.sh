@@ -7,7 +7,7 @@ if [ "$should_sign" = "--sign" ]; then
         cp instrumentation/target/instrumentation-1.0-SNAPSHOT.jar epsagon/src/main/resources/agent.jar &&
         sync &&
         cd epsagon/ &&
-        mvn clean package &&
+        mvn validate && mvn clean package &&
         cd ..
 else
     cd instrumentation/ &&
@@ -16,6 +16,6 @@ else
         cp instrumentation/target/instrumentation-1.0-SNAPSHOT.jar epsagon/src/main/resources/agent.jar &&
         sync &&
         cd epsagon/ &&
-        mvn clean install -P local-build &&
+        mvn validate && mvn clean install -P local-build &&
         cd ..
 fi

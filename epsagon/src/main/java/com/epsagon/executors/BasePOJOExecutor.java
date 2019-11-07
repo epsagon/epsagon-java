@@ -1,8 +1,12 @@
 package com.epsagon.executors;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.epsagon.Trace;
 import com.epsagon.protocol.EventOuterClass;
+import com.epsagon.vendored.lambdainternal.EventHandlerLoader;
+import com.epsagon.vendored.lambdainternal.PojoSerializerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,17 +26,19 @@ public abstract class BasePOJOExecutor extends Executor {
         super(userHandlerClass);
     }
 
+
     /**
      * Parses the user's input to an object
      * @param input The user's input stream
      * @return The input as an object
-     * @throws IOException
      */
-    protected Object parseInput(InputStream input) throws IOException {
+    protected Object parseInput(InputStream input) {
         Type inputType = _userHandlerMethod.getParameterTypes()[0];
 
         // Not trying and catching here. If malformed input was given we should explode.
-        return _objectMapper.readValue(input, (Class<?>) inputType);
+        PojoSerializerFactory.PojoSerializer serializer = EventHandlerLoader.getSerializer(inputType);
+
+        return serializer.fromJson(input);
     }
 
 
@@ -55,18 +61,25 @@ public abstract class BasePOJOExecutor extends Executor {
      * @param output The output stream
      * @param runnerBuilder The runner event builder
      * @param result The result we got
-     * @throws IOException
      */
     protected void handleResult(
             OutputStream output,
             EventOuterClass.Event.Builder runnerBuilder,
             Object result
-    ) throws IOException {
+    ) {
         Type outputType = _userHandlerMethod.getReturnType();
-        _objectMapper.writeValue(output, ((Class) outputType).cast(result));
-        runnerBuilder.getResourceBuilder().putMetadata(
+        PojoSerializerFactory.PojoSerializer serializer = EventHandlerLoader.getSerializer(outputType);
+        serializer.toJson(result, output);
+
+        try {
+            ByteArrayOutputStream returnValueStream = new ByteArrayOutputStream();
+            serializer.toJson(result, returnValueStream);
+            runnerBuilder.getResourceBuilder().putMetadata(
                 "return_value",
-                _objectMapper.writeValueAsString(result)
-        );
+                new String(returnValueStream.toByteArray())
+            );
+        } catch (Throwable t) {
+            Trace.getInstance().addException(t);
+        }
     }
 }

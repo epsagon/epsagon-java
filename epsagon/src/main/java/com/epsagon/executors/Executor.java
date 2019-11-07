@@ -5,28 +5,16 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.epsagon.Trace;
 import com.epsagon.events.triggers.TriggerFactory;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
-import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
 /**
  * A class representing a client's handler executor.
  */
 public abstract class Executor {
-    protected static final ObjectMapper _objectMapper = new ObjectMapper()
-            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .enable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS)
-            .registerModule(new JodaModule());
     protected Class<?> _userHandlerClass;
     protected Object _userHandlerObj;
     protected Method _userHandlerMethod;
