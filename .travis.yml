@@ -30,6 +30,7 @@ jobs:
         gpg --import --batch maven-artifact-signing-key.asc
       fi
     before_script:
+      - nvm install 8.12.0
       - nvm use 8.12.0
       - yarn global add @conveyal/maven-semantic-release semantic-release
     script:
