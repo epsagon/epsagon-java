@@ -29,8 +29,8 @@ jobs:
         openssl aes-256-cbc -K $encrypted_b6e52004f498_key -iv $encrypted_b6e52004f498_iv -in maven-artifact-signing-key.asc.enc -out maven-artifact-signing-key.asc -d
         gpg --import --batch maven-artifact-signing-key.asc
       fi
+      nvm use node
     before_script:
-      - nvm use node
       - yarn global add @conveyal/maven-semantic-release semantic-release
     script:
       - ./build.sh --sign
