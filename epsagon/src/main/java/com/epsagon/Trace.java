@@ -99,7 +99,7 @@ public class Trace {
      * Sends the trace.
      */
     public void send() {
-        _LOG.info("sending trace");
+        _LOG.trace("sending trace");
         if (_core == null) {
             _LOG.error("Trace must be restarted before sending.");
             return;
@@ -144,7 +144,8 @@ public class Trace {
             }
         } catch (IOException e) {
             _LOG.error(_config.getTraceCollectorURL());
-            _LOG.error("Cannot connect to Trace collector URL. Cannot report to Epsagon.", e);
+            _LOG.error("Cannot connect to Trace collector URL. Cannot report to Epsagon.");
+            _LOG.error(e.getMessage());
         }
     }
 }
