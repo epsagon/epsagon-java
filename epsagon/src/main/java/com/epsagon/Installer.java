@@ -19,6 +19,7 @@ public class Installer {
      */
     public static synchronized void install() {
         List<VirtualMachineDescriptor> vms = VirtualMachine.list();
+        Patcher.instrumentation = null; // loading Patcher, do not remove this line.
 
         for (VirtualMachineDescriptor vmd : vms) {
             try {

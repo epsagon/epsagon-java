@@ -23,13 +23,13 @@ public class EpsagonAgent {
         try {
             _instrumentation = instrumentation;
 
-            URL[] news = {
-                new File("/var/task/").toURI().toURL()
-            };
-
-            URLClassLoader newClassLoader = new URLClassLoader(news, null);
-            Thread.currentThread().setContextClassLoader(newClassLoader);
-            final Class<?> patcher = newClassLoader.loadClass("com.epsagon.Patcher");
+            Class<?> patcher = null;
+            for (Class clazz : instrumentation.getAllLoadedClasses()) {
+                if (clazz.getName().equals("com.epsagon.Patcher")) {
+                    patcher = clazz;
+                    break;
+                }
+            }
             final Method instrumentAll = patcher.getMethods()[0];
             instrumentAll.invoke(null, instrumentation);
         } catch (Exception e) {
