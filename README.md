@@ -99,7 +99,7 @@ The easiest way to get started is as following:
 
 And that's it! Your function is ready for invocation.
 
-If you do not with to configure environment variables, please use this alternative:
+If you do not want to configure environment variables, please use this alternative:
 
 First, create a simple class that extends `com.epsagon.EpsagonRequestHandler` like so:
 ```java
