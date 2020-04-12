@@ -154,7 +154,7 @@ export EPSAGON_TOKEN=<your-token>
 export EPSAGON_SERVICE_NAME=tomcat-prod
 java -javaagent:./epsagon-opentracing-agent-1.0.19.jar -jar app.jar
 
-### Kafka
+### Kafka Clients
 
 Tracing can be done using the auto-tracing:
 
