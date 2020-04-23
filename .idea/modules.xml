@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/epsagon/epsagon.iml" filepath="$PROJECT_DIR$/epsagon/epsagon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/epsagon-java.iml" filepath="$PROJECT_DIR$/.idea/epsagon-java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/instrumentation/instrumentation.iml" filepath="$PROJECT_DIR$/instrumentation/instrumentation.iml" />
+    </modules>
+  </component>
+</project>
