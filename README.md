@@ -14,7 +14,7 @@ tracing and performence monitoring.
   <artifactId>epsagon</artifactId>
   <version>{Epsagon version}</version>
 </dependency>
-```
+``` 
 The version will be in the format `n.n.n`, latest maven-central version is specified at the top as a
 badge.
 
