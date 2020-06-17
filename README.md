@@ -33,7 +33,7 @@ The easiest way to get started is as following:
 And that's it! Your function is ready for invocation.
 
 ## Alternative (No Environment Variables)
-If you do not with to configure environment variables, please use this alternative:
+If you do not want to configure environment variables, please use this alternative:
 
 First, create a simple class that extends `com.epsagon.EpsagonRequestHandler` like so:
 ```java
@@ -55,6 +55,9 @@ The class should have a static initializer that calls the `EpsagonRequestHandler
 and gives it your Lambda's actual entry point as a parameter. The return value of this method
 is an `EpsagonConfiguration` object. Configure your token and application name using this object,
 like the example shows.
+
+Finally, set this class as the entry point of your Lambda (instead of your original handler). This
+class will automatically load your original handler and execute it.
 
 # Copyright
 Provided under the MIT license. See LICENSE for details.
