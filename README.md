@@ -1,10 +1,17 @@
-# Epsagon Instrumentation for Java
+<p align="center">
+  <a href="https://epsagon.com" target="_blank" align="center">
+    <img src="https://cdn2.hubspot.net/hubfs/4636301/Positive%20RGB_Logo%20Horizontal%20-01.svg" width="300">
+  </a>
+  <br />
+</p>
+
 [![Maven Central](https://img.shields.io/maven-central/v/com.epsagon/epsagon.svg)](https://img.shields.io/maven-central/v/com.epsagon/epsagon.svg)
 [![Build Status](https://travis-ci.com/epsagon/serverless-plugin-epsagon.svg?branch=master)](https://travis-ci.com/epsagon/serverless-plugin-epsagon)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
-This package provides a tracer for Java code running on functions for collection of distributed
-tracing and performence monitoring.
+# Epsagon Instrumentation for Java
+
+This package provides tracing to Java applications for the collection of distributed tracing and performance metrics in [Epsagon](https://app.epsagon.com/?utm_source=github).
 
 # Where To Get Packages
 * For [Maven](https://maven.apache.org) projects, use:
@@ -27,7 +34,7 @@ The easiest way to get started is as following:
                               previously configured (should be something like
                               `com.yourcompany.YourHandler::handlerMethod`)
     * `EPSAGON_TOKEN` - Epsagon's token, can be found at the 
-                        [Dashboard](https://dashboard.epsagon.com)
+                        [Dashboard](https://app.epsagon.com/settings)
     * `EPSAGON_APP_NAME` - A name for the application of this function, optional.
 
 And that's it! Your function is ready for invocation.
@@ -62,4 +69,4 @@ class will automatically load your original handler and execute it.
 # Copyright
 Provided under the MIT license. See LICENSE for details.
 
-Copyright 2018, Epsagon
+Copyright 2020, Epsagon
