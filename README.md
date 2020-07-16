@@ -13,8 +13,9 @@
 
 This package provides tracing to Java applications for the collection of distributed tracing and performance metrics in [Epsagon](https://app.epsagon.com/?utm_source=github).
 
-# Where To Get Packages
-* For [Maven](https://maven.apache.org) projects, use:
+# Getting The Packages
+## Maven
+For [Maven](https://maven.apache.org) projects, use:
 ```xml
 <dependency>
   <groupId>com.epsagon</groupId>
@@ -22,6 +23,23 @@ This package provides tracing to Java applications for the collection of distrib
   <version>{Epsagon version}</version>
 </dependency>
 ``` 
+The version will be in the format `n.n.n`, latest maven-central version is specified at the top as a
+badge.
+
+## Gradle
+For [Gradle](https://gradle.org/) projects, first add the `nuiton` repository:
+```
+repositories {
+    ...
+    maven {
+        url 'http://maven.nuiton.org/release/'
+    }
+}
+```
+Then, configure epsagon as a dependency:
+```
+compile "com.epsagon:epsagon:${epsagon_version}"
+```
 The version will be in the format `n.n.n`, latest maven-central version is specified at the top as a
 badge.
 
