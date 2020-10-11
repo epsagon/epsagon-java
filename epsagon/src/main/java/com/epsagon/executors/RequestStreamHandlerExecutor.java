@@ -7,6 +7,8 @@ import com.epsagon.events.runners.LambdaRunner;
 import com.epsagon.protocol.EventOuterClass;
 import org.apache.commons.io.input.TeeInputStream;
 import org.apache.commons.io.output.TeeOutputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,6 +21,8 @@ import java.lang.reflect.InvocationTargetException;
  * {@link com.amazonaws.services.lambda.runtime.RequestStreamHandler} interface.
  */
 public class RequestStreamHandlerExecutor extends Executor {
+    private static final Logger _LOG = LogManager.getLogger(RequestStreamHandlerExecutor.class);
+
     /**
      * @param userHandlerClass The class of the user handler.
      * @throws ExecutorException Raised when executor initialization fails.
@@ -61,6 +65,10 @@ public class RequestStreamHandlerExecutor extends Executor {
         TeeInputStream teeInput = new TeeInputStream(input, inputTrack);
 
         try{
+            _LOG.debug(
+                    "[Epsagon] Invoking original handler method {} with the following arguments: " +
+                            "input: {}, output: {}, context: {}",
+                    _userHandlerMethod, teeInput, teeOutput, context);
            _userHandlerMethod.invoke(_userHandlerObj, teeInput, teeOutput, context);
         } catch (IllegalAccessException | InvocationTargetException e) {
             _trace.addException(e); // we could not invoke the function

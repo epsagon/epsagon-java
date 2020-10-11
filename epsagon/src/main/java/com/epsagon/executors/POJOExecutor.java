@@ -6,6 +6,8 @@ import com.epsagon.events.EventBuildHelper;
 import com.epsagon.events.runners.LambdaRunner;
 import com.epsagon.protocol.EventOuterClass;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +20,7 @@ import java.lang.reflect.Type;
  * An executor for client request that don't implement an AWS interface, POJO requests.
  */
 public class POJOExecutor extends BasePOJOExecutor {
+    private static final Logger _LOG = LogManager.getLogger(POJOExecutor.class);
 
     /**
      * @param userHandlerClass The class of the user handler.
@@ -69,18 +72,34 @@ public class POJOExecutor extends BasePOJOExecutor {
             switch (_userHandlerMethod.getParameterCount()) {
                 case 0:
                     // no parameters
+                    _LOG.debug(
+                            "[Epsagon] Invoking original handler method {} with no arguments.",
+                            _userHandlerMethod);
                     result = _userHandlerMethod.invoke(_userHandlerObj);
                     break;
                 case 1:
                     // only context or event
                     if (_userHandlerMethod.getParameterTypes()[0] == Context.class) {
+                        _LOG.debug(
+                                "[Epsagon] Invoking original handler method {} with the following arguments: " +
+                                        "context: {}",
+                                _userHandlerMethod,
+                                context);
                         result = _userHandlerMethod.invoke(_userHandlerObj, context);
                     } else {
+                        _LOG.debug(
+                                "[Epsagon] Invoking original handler method {} with the following arguments: " +
+                                        "input: {}",
+                                _userHandlerMethod, realInput);
                         result = _userHandlerMethod.invoke(_userHandlerObj, realInput);
                     }
                     break;
                 case 2:
                     // both event and context
+                    _LOG.debug(
+                            "[Epsagon] Invoking original handler method {} with the following arguments: " +
+                                    "input: {}, context: {}",
+                            _userHandlerMethod, realInput, context);
                     result = _userHandlerMethod.invoke(_userHandlerObj, realInput, context);
                     break;
             }
@@ -110,14 +129,19 @@ public class POJOExecutor extends BasePOJOExecutor {
         // Input only exists if there are more then zero parameters, and the first
         // parameter isn't a context object
         Type[] parameterTypes = _userHandlerMethod.getParameterTypes();
+        _LOG.debug("[Epsagon] User handler method {} has the following parameter types: {}",
+                _userHandlerMethod,
+                parameterTypes);
         if (
             parameterTypes.length > 0 &&
             parameterTypes[0] != Context.class &&
             parameterTypes[0] != InputStream.class
         ) {
+            _LOG.debug("[Epsagon] Parameter types are valid");
             return super.handleInput(input, context);
         }
 
+        _LOG.debug("[Epsagon] Returning null input because of invalid parameter types");
         registerTrigger(
             IOUtils.toString(input, "UTF-8"),
             context

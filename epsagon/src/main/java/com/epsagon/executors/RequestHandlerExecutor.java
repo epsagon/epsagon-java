@@ -6,6 +6,8 @@ import com.epsagon.events.EventBuildHelper;
 import com.epsagon.events.runners.LambdaRunner;
 import com.epsagon.events.triggers.TriggerFactory;
 import com.epsagon.protocol.EventOuterClass;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +21,8 @@ import java.lang.reflect.Type;
  * {@link com.amazonaws.services.lambda.runtime.RequestHandler} interface.
  */
 public class RequestHandlerExecutor extends BasePOJOExecutor {
+    private static final Logger _LOG = LogManager.getLogger(RequestHandlerExecutor.class);
+
     /**
      * @param userHandlerClass The class of the user handler.
      * @throws ExecutorException Raised when executor initialization fails.
@@ -69,6 +73,10 @@ public class RequestHandlerExecutor extends BasePOJOExecutor {
         Object realInput = handleInput(input, context);
 
         try {
+            _LOG.debug(
+                    "[Epsagon] Invoking original handler method {} with the following arguments: " +
+                            "input: {}, context: {}",
+                    _userHandlerMethod, realInput, context);
             Object result = _userHandlerMethod.invoke(_userHandlerObj, realInput, context);
             handleResult(output, runnerBuilder, result);
         } catch (IllegalAccessException | InvocationTargetException e) {

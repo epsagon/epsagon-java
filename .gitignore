@@ -157,3 +157,8 @@ gradle-app.setting
 **/build/
 
 # End of https://www.gitignore.io/api/vim,java,maven,gradle,intellij
+
+# IntelliJ
+.idea/
+.DS_Store
+*.iml

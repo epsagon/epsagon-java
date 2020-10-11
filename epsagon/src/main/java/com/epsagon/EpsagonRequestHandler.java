@@ -58,6 +58,7 @@ public class EpsagonRequestHandler implements RequestStreamHandler {
         _trace.reset();
 
         try {
+            _LOG.debug("[Epsagon] Executing request using executor class {}", _executor.getClass().getName());
             _executor.execute(input, output, context);
         } catch (Throwable e) {
             if (e instanceof IOException) {

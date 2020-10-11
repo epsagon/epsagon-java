@@ -3,6 +3,8 @@ package com.epsagon.executors;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.epsagon.Patcher;
 import com.epsagon.protocol.EventOuterClass;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -21,6 +23,8 @@ public abstract class BasePOJOExecutor extends Executor {
     private Method getEventSerializerFor = null;
     private Method getInstance = null;
     private Method jacksonGetSerializer = null;
+
+    private static final Logger _LOG = LogManager.getLogger(BasePOJOExecutor.class);
 
     /**
      * @param userHandlerClass The class of the user handler.
@@ -53,15 +57,20 @@ public abstract class BasePOJOExecutor extends Executor {
      * @return The input as an object
      */
     protected Object parseInput(InputStream input) throws IOException {
-        Type inputType = _userHandlerMethod.getParameterTypes()[0];
+        Type inputType = _userHandlerMethod.getGenericParameterTypes()[0];
         try {
             Object serializer = getSerializer(inputType);
             Method fromJson = serializer.getClass().getMethod("fromJson", InputStream.class);
+            _LOG.debug("[Epsagon] Deserializing input {} of type {} using fromJson method {} of serializer {}",
+                    input, inputType, fromJson, serializer);
             fromJson.setAccessible(true);
             Object result = fromJson.invoke(serializer, input);
             fromJson.setAccessible(false);
+            _LOG.debug("[Epsagon] Input stream deserialized to input {}", result);
             return result;
         } catch (Throwable t) {
+            _LOG.error("[Epsagon] Exception in parsing input stream, will return null input: {}", t.toString());
+            t.printStackTrace();
             Throwable cause = t.getCause();
             if (cause instanceof UncheckedIOException) {
                 throw ((UncheckedIOException) cause).getCause();
