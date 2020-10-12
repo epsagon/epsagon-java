@@ -1,13 +1,21 @@
-# Epsagon Instrumentation for Java
+<p align="center">
+  <a href="https://epsagon.com" target="_blank" align="center">
+    <img src="https://cdn2.hubspot.net/hubfs/4636301/Positive%20RGB_Logo%20Horizontal%20-01.svg" width="300">
+  </a>
+  <br />
+</p>
+
 [![Maven Central](https://img.shields.io/maven-central/v/com.epsagon/epsagon.svg)](https://img.shields.io/maven-central/v/com.epsagon/epsagon.svg)
 [![Build Status](https://travis-ci.com/epsagon/serverless-plugin-epsagon.svg?branch=master)](https://travis-ci.com/epsagon/serverless-plugin-epsagon)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
-This package provides a tracer for Java code running on functions for collection of distributed
-tracing and performence monitoring.
+# Epsagon Instrumentation for Java
 
-# Where To Get Packages
-* For [Maven](https://maven.apache.org) projects, use:
+This package provides tracing to Java applications for the collection of distributed tracing and performance metrics in [Epsagon](https://app.epsagon.com/?utm_source=github).
+
+# Getting The Packages
+## Maven
+For [Maven](https://maven.apache.org) projects, use:
 ```xml
 <dependency>
   <groupId>com.epsagon</groupId>
@@ -15,6 +23,23 @@ tracing and performence monitoring.
   <version>{Epsagon version}</version>
 </dependency>
 ``` 
+The version will be in the format `n.n.n`, latest maven-central version is specified at the top as a
+badge.
+
+## Gradle
+For [Gradle](https://gradle.org/) projects, first add the `nuiton` repository:
+```
+repositories {
+    ...
+    maven {
+        url 'http://maven.nuiton.org/release/'
+    }
+}
+```
+Then, configure epsagon as a dependency:
+```
+compile "com.epsagon:epsagon:${epsagon_version}"
+```
 The version will be in the format `n.n.n`, latest maven-central version is specified at the top as a
 badge.
 
@@ -27,13 +52,13 @@ The easiest way to get started is as following:
                               previously configured (should be something like
                               `com.yourcompany.YourHandler::handlerMethod`)
     * `EPSAGON_TOKEN` - Epsagon's token, can be found at the 
-                        [Dashboard](https://dashboard.epsagon.com)
+                        [Dashboard](https://app.epsagon.com/settings)
     * `EPSAGON_APP_NAME` - A name for the application of this function, optional.
 
 And that's it! Your function is ready for invocation.
 
 ## Alternative (No Environment Variables)
-If you do not with to configure environment variables, please use this alternative:
+If you do not want to configure environment variables, please use this alternative:
 
 First, create a simple class that extends `com.epsagon.EpsagonRequestHandler` like so:
 ```java
@@ -56,7 +81,10 @@ and gives it your Lambda's actual entry point as a parameter. The return value o
 is an `EpsagonConfiguration` object. Configure your token and application name using this object,
 like the example shows.
 
+Finally, set this class as the entry point of your Lambda (instead of your original handler). This
+class will automatically load your original handler and execute it.
+
 # Copyright
 Provided under the MIT license. See LICENSE for details.
 
-Copyright 2018, Epsagon
+Copyright 2020, Epsagon
