@@ -11,6 +11,9 @@
 
 # Epsagon Instrumentation for Java
 
+![Trace](trace.png)
+
+
 This package provides tracing to Java applications for the collection of distributed tracing and performance metrics in [Epsagon](https://app.epsagon.com/?utm_source=github).
 
 # Getting The Packages
