@@ -27,13 +27,23 @@ public abstract class Executor {
     public Executor(Class<?> userHandlerClass) throws ExecutorException {
         _userHandlerClass = userHandlerClass;
         Constructor<?> ctor;
+        boolean isFailedToCreateInstance = false;
         try {
             ctor = _userHandlerClass.getConstructor();
             _userHandlerObj = ctor.newInstance();
         } catch (Exception e) {
-            throw new ExecutorException("Error instancing class" + userHandlerClass.getCanonicalName());
+            isFailedToCreateInstance = true;
         }
-
+        // In case of scala handler we need to get the constructor differently, becaose of it's private.
+        if (isFailedToCreateInstance == true) {
+            try {
+                ctor = _userHandlerClass.getDeclaredConstructor();
+                ctor.setAccessible(true);
+                _userHandlerObj = ctor.newInstance();
+            } catch (Exception e) {
+                throw new ExecutorException("Error instancing class: " + userHandlerClass.getCanonicalName());
+            }
+        }
     }
 
     /**
@@ -87,16 +97,18 @@ public abstract class Executor {
          * Creates an appropriate {@link Executor} from a given entry point.
          * @param entryPoint A string of the form "package.Class::method". If the class implements
          *                   a predefined AWS Lambda interface, doesn't have to include method.
+         * @param isScala Initialize executor with Scala params.
          * @return an appropriate {@link Executor} for the client's handler.
          * @throws ExecutorException Raised when executor initialization fails.
          */
-        public Executor createExecutor(String entryPoint) throws ExecutorException {
+        public Executor createExecutor(String entryPoint, boolean isScala) throws ExecutorException {
             String[] wrappedClassComponents = entryPoint.split(":");
             if (wrappedClassComponents.length < 1) {
                 throw new ExecutorException("Invalid entry point: " + entryPoint);
             }
 
             String wrappedClassPath = wrappedClassComponents[0];
+            if (isScala) wrappedClassPath += "$";
             String wrappedHandlerName = (
                     wrappedClassComponents.length > 1 ?
                             wrappedClassComponents[wrappedClassComponents.length - 1] : null
