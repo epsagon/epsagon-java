@@ -39,7 +39,7 @@ public class EpsagonRequestHandler implements RequestStreamHandler {
      * @return A reference to {@link EpsagonConfig} singleton for the user to configure.
      * @throws EpsagonException Raised for any error in creating the user's handler.
      */
-    public static EpsagonConfig init(String entryPoint) throws EpsagonException{
+    public static EpsagonConfig init(String entryPoint) throws EpsagonException {
         Installer.install();
         boolean isExecutorFailToCreated = false;
         try {
@@ -65,7 +65,6 @@ public class EpsagonRequestHandler implements RequestStreamHandler {
             Context context
     ) throws IOException {
         _trace.reset();
-
         try {
             _LOG.debug("[Epsagon] Executing request using executor class {}", _executor.getClass().getName());
             _executor.execute(input, output, context);
