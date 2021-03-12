@@ -28,12 +28,12 @@ public class Patcher {
                 .ignore(
                         not(nameStartsWith("com.amazonaws"))
                 );
-        boolean isServiceLoaderSuccessed = false;
+        boolean isServiceLoaderSuccess = false;
         for (final EpsagonInstrumentation instrumenter : ServiceLoader.load(EpsagonInstrumentation.class)) {
-            isServiceLoaderSuccessed = true;
+            isServiceLoaderSuccess = true;
             agentBuilder = instrumenter.instrument(agentBuilder);
         }
-        if (!isServiceLoaderSuccessed){
+        if (!isServiceLoaderSuccess){
             agentBuilder = new AWSClientInstrumentation().instrument(agentBuilder);
         }
         agentBuilder.installOn(inst);
