@@ -53,10 +53,13 @@ public class SQSOperation {
                             .setName(queueURL[queueURL.length - 1]);
                     List<Message> messages = receiveMessageRes.getMessages();
                     metadataBuilder
-                            .putIfAllData("Message Body", messages.get(0).getBody())
-                            .put("Number Of Messages", Integer.toString(messages.size()))
-                            .put("Message ID", messages.get(0).getMessageId())
-                            .put("MD5 Of Message Body", messages.get(0).getMD5OfBody());
+                            .put("Number Of Messages", Integer.toString(messages.size()));
+                    if (messages.size() > 0) {
+                        metadataBuilder
+                                .putIfAllData("Message Body", messages.get(0).getBody())
+                                .put("Message ID", messages.get(0).getMessageId())
+                                .put("MD5 Of Message Body", messages.get(0).getMD5OfBody());
+                    }
                     break;
             }
             builder.getResourceBuilder().putAllMetadata(metadataBuilder.build());

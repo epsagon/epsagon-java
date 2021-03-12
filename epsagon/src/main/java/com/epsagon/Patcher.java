@@ -1,6 +1,7 @@
 package com.epsagon;
 
 import com.epsagon.instrumentation.EpsagonInstrumentation;
+import com.epsagon.instrumentation.AWSClientInstrumentation;
 import net.bytebuddy.agent.builder.AgentBuilder;
 
 import java.lang.instrument.Instrumentation;
@@ -27,9 +28,13 @@ public class Patcher {
                 .ignore(
                         not(nameStartsWith("com.amazonaws"))
                 );
-
+        boolean isServiceLoaderSuccessed = false;
         for (final EpsagonInstrumentation instrumenter : ServiceLoader.load(EpsagonInstrumentation.class)) {
+            isServiceLoaderSuccessed = true;
             agentBuilder = instrumenter.instrument(agentBuilder);
+        }
+        if (!isServiceLoaderSuccessed){
+            agentBuilder = new AWSClientInstrumentation().instrument(agentBuilder);
         }
         agentBuilder.installOn(inst);
     }
