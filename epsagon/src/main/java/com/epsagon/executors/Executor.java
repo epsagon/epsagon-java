@@ -27,19 +27,16 @@ public abstract class Executor {
     public Executor(Class<?> userHandlerClass) throws ExecutorException {
         _userHandlerClass = userHandlerClass;
         Constructor<?> ctor;
-        boolean isFailedToCreateInstance = false;
         try {
             ctor = _userHandlerClass.getConstructor();
             _userHandlerObj = ctor.newInstance();
-        } catch (Exception e) {
-            isFailedToCreateInstance = true;
-        }
-        // In case of scala handler we need to get the constructor differently, becaose of it's private.
-        if (isFailedToCreateInstance == true) {
+        } catch (Exception e_) {
+            // In case of scala handler we need to get the constructor differently, because of it's private.
             try {
                 ctor = _userHandlerClass.getDeclaredConstructor();
                 ctor.setAccessible(true);
                 _userHandlerObj = ctor.newInstance();
+                ctor.setAccessible(false);
             } catch (Exception e) {
                 throw new ExecutorException("Error instancing class: " + userHandlerClass.getCanonicalName());
             }

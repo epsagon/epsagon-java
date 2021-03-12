@@ -41,14 +41,10 @@ public class EpsagonRequestHandler implements RequestStreamHandler {
      */
     public static EpsagonConfig init(String entryPoint) throws EpsagonException {
         Installer.install();
-        boolean isExecutorFailToCreated = false;
         try {
             Executor.Factory executorFactory = new Executor.Factory();
             _executor = executorFactory.createExecutor(entryPoint, false);
         } catch (EpsagonException e) {
-            isExecutorFailToCreated = true;
-        }
-        if (isExecutorFailToCreated == true) {
             Executor.Factory executorFactory = new Executor.Factory();
             _executor = executorFactory.createExecutor(entryPoint, true);
         }
