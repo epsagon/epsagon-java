@@ -47,7 +47,7 @@
     </properties>
     <groupId>com.epsagon</groupId>
     <artifactId>epsagon</artifactId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.3-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>com.amazonaws</groupId>
@@ -77,6 +77,11 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-ses</artifactId>
+            <version>1.11.452</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-emr</artifactId>
             <version>1.11.452</version>
         </dependency>
         <dependency>
