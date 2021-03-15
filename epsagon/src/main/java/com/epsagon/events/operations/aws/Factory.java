@@ -36,6 +36,9 @@ public class Factory {
         OPERATIONS_BY_EVENT.put(
                 "dynamodb", DynamoDBOperation::newBuilder
         );
+        OPERATIONS_BY_EVENT.put(
+                "emr", EMROperation::newBuilder
+        );
     }
 
     /**
